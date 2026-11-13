@@ -1,8 +1,9 @@
 import { MINIMUM_PASSWORD_LENGTH } from "./../constants/validation";
 import { AppError } from "../errors/AppError";
 import { AUTH_STRINGS } from "../constants/string";
-import { createSecureServer, findUserByEmail } from "../repositories/user.repository";
+import { createUser, findUserByEmail, findUserByEmailAndPassword } from "../repositories/user.repository";
 import bcrypt from "bcrypt";
+import { signAccessToken } from "../lib/jwt";
 
 export async function registerUser(email: string, password: string) {
   if (!email || !password) {
@@ -23,5 +24,32 @@ export async function registerUser(email: string, password: string) {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  await createSecureServer(normalizeEmail, passwordHash);
+  await createUser(normalizeEmail, passwordHash);
+}
+
+export async function loginUser(email: string, password: string) {
+  if (!email || !password) {
+    throw new AppError(400, AUTH_STRINGS.CREDENTIALS_REQUIRED);
+  }
+
+  const normalizeEmail = email.toLowerCase().trim();
+  const user = await findUserByEmailAndPassword(normalizeEmail);
+
+  if (!user?.password_hash) {
+    throw new AppError(401, AUTH_STRINGS.INVALID_CREDENTIALS);
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, user?.password_hash);
+
+  if (!isPasswordValid) {
+    throw new AppError(401, AUTH_STRINGS.INVALID_CREDENTIALS);
+  }
+
+  const accessToken = signAccessToken({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  });
+
+  return { accessToken };
 }
