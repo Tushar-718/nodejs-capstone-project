@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // --- Core Engine Setup ---
+    "target": "ES2022", // Compiles to modern JS supported by Node 18+
+    "module": "NodeNext", // Enables modern ES Modules (import/export)
+    "moduleResolution": "NodeNext", // Tells TS how to resolve package imports in Node
+    "outDir": "./dist", // Output folder for compiled .js files
+    "rootDir": "./src", // Source folder where your .ts files live
+    "esModuleInterop": true, // Allows default imports from legacy CommonJS packages
+    "skipLibCheck": true, // Skips type-checking node_modules (much faster builds)
+    "forceConsistentCasingInFileNames": true, // Prevents case-sensitivity bugs between Mac/Windows
+    "resolveJsonModule": true, // Allows you to import .json files directly
+
+    // --- Maximum Strictness Rules ---
+    "strict": true, // Enables baseline safety (no implicit any, strict nulls)
+    "noUnusedLocals": true, // Throws error if a variable is declared but never used
+    "noUnusedParameters": true, // Throws error if a function parameter is ignored
+    "noImplicitReturns": true, // Forces every if/else path in a function to return a value
+    "noFallthroughCasesInSwitch": true, // Throws error if you forget a 'break' in a switch case
+    "noUncheckedIndexedAccess": true, // Forces checking for undefined when accessing arrays/objects
+    "exactOptionalPropertyTypes": true, // Prevents setting optional props explicitly to 'undefined'
+    "noImplicitOverride": true, // Requires 'override' keyword when extending classes
+    "types": ["node"]
+  },
+  "include": ["src/**/*"], // Compiles everything inside the src folder
+  "exclude": ["node_modules", "dist", "**/*.test.ts"] // Ignores modules, build folder, and test files
+}
