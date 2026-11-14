@@ -55,8 +55,8 @@ export async function updateTaskByTaskId(userId: string, taskId: string, title: 
   return result.rows[0] ?? null;
 }
 
-export async function deleteTaskById(userId: string, taskId: string): Promise<Task | null> {
-  const result = await pool.query<Task>(
+export async function deleteTaskById(userId: string, taskId: string): Promise<boolean> {
+  const result = await pool.query(
     `
         DELETE FROM support_tasks
         WHERE user_id=$1 AND id=$2
