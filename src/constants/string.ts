@@ -11,3 +11,9 @@ export const AUTH_STRINGS = {
   UNAUTHORIZED: "You do not have permission to access this resource.",
   AUTH_NETWORK_ERROR: "Unable to connect to the authentication server. Please check your network.",
 };
+
+export const AUTH_TOKEN_STRINGS = {
+  INVALID_TOKEN: "Invalid or expired access token.",
+  AUTH_TOKEN_REQUIRED: "Access token is required",
+  ADMIN_ACCESS_REQUIRED: "Admin access required.",
+};

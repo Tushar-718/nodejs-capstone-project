@@ -1,4 +1,6 @@
 import { env } from "../config/env";
+import { AUTH_TOKEN_STRINGS } from "../constants/string";
+import { AppError } from "../errors/AppError";
 import { TokenPayload } from "../types/user";
 import jwt, { SignOptions } from "jsonwebtoken";
 
@@ -7,4 +9,12 @@ export function signAccessToken(payload: TokenPayload): string {
     expiresIn: env.jwtAccessExpiresIn as NonNullable<SignOptions["expiresIn"]>,
   };
   return jwt.sign(payload, env.jwtAccessSecret, options);
+}
+
+export function verifyAccessToken(token: string): TokenPayload {
+  try {
+    return jwt.verify(token, env.jwtAccessSecret) as TokenPayload;
+  } catch (error) {
+    throw new AppError(401, AUTH_TOKEN_STRINGS.INVALID_TOKEN);
+  }
 }
