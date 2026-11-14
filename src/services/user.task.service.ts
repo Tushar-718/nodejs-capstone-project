@@ -1,4 +1,5 @@
 import { TASK_STRINGS } from "../constants/string";
+import { UUID_REGEX } from "../constants/validation";
 import { AppError } from "../errors/AppError";
 import {
   createTask,
@@ -8,8 +9,6 @@ import {
   updateTaskByTaskId,
 } from "../repositories/user.task.repository";
 import { Task } from "../types/task";
-
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function validateTitle(title: unknown): string {
   if (typeof title !== "string" || !title.trim()) {

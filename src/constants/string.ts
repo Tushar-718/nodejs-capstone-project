@@ -27,6 +27,7 @@ export const TASK_STRINGS = {
   TASK_UPDATED: "Task updated successfully.",
   TASK_DELETED: "Task deleted successfully.",
   TASK_FORBIDDEN: "You do not have permission to access or modify this task.",
+  INVALID_STATUS: "Status must be one of OPEN, IN_PROGRESS, or RESOLVED",
 } as const;
 
 export const COMMON_STRINGS = {

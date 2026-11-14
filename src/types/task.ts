@@ -6,3 +6,6 @@ export type Task = {
   created_at: string;
   updated_at: string;
 };
+
+export const TASK_STATUS = ["OPEN", "IN_PROGRESS", "RESOLVED"];
+export type TaskStatus = (typeof TASK_STATUS)[number];
