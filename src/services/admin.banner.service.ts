@@ -2,7 +2,12 @@ import { AppError } from "../errors/AppError";
 import { clearBannerCache, getBannersFromCache, setBannerCache } from "../lib/bannerCache";
 import { uploadBannerImageToCloudinary } from "../lib/cloudinary";
 import { logger } from "../lib/logger";
-import { createAdminBanner, findAllBannersFromDB } from "../repositories/admin.banner.repository";
+import { addDeleteCloudinaryJob } from "../queues/deleteCloudinaryImage.queue";
+import {
+  createAdminBanner,
+  deleteAdminBannerById,
+  findAllBannersFromDB,
+} from "../repositories/admin.banner.repository";
 import { Banner } from "../types/banner";
 
 export async function createAdminBannerService(file: Express.Multer.File | undefined): Promise<Banner> {
@@ -42,4 +47,17 @@ export async function fetchAdminBanners(): Promise<Banner[]> {
   logger.info("Banner Cache MISS!!! : Setting data to redis");
   await setBannerCache(banners);
   return banners;
+}
+
+export async function deleteAdminBanner(bannerId: string): Promise<void> {
+  // delete from our DB and get public id
+  const publicId = await deleteAdminBannerById(bannerId);
+  if (!publicId) {
+    throw new AppError(404, "Banner not found");
+  }
+  // also remove from cache
+  await clearBannerCache();
+
+  // add bullmq job
+  await addDeleteCloudinaryJob(publicId);
 }
