@@ -9,7 +9,8 @@
     "start": "node dist/server.js",
     "migrate": "tsx src/scripts/migrate.ts",
     "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down -d"
+    "docker:down": "docker compose down -d",
+    "worker": "tsx src/workers/deleteCloudinaryImage.worker.ts"
   },
   "keywords": [],
   "author": "",
