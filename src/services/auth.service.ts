@@ -1,9 +1,18 @@
 import { MINIMUM_PASSWORD_LENGTH } from "./../constants/validation";
 import { AppError } from "../errors/AppError";
 import { AUTH_STRINGS } from "../constants/string";
-import { createUser, findUserByEmail, findUserByEmailAndPassword } from "../repositories/user.repository";
+import {
+  createGoogleUser,
+  createUser,
+  findUserByEmail,
+  findUserByEmailAndPassword,
+  findUserByGoogleId,
+  linkGoogleIdToUser,
+} from "../repositories/user.repository";
 import bcrypt from "bcrypt";
 import { signAccessToken } from "../lib/jwt";
+import { getGoogleAuthUrl, getGoogleUserFromAuthCode } from "../lib/google";
+import { User } from "../types/user";
 
 export async function registerUser(email: string, password: string) {
   if (!email || !password) {
@@ -50,6 +59,39 @@ export async function loginUser(email: string, password: string) {
     email: user.email,
     role: user.role,
   });
+
+  return { accessToken };
+}
+
+export function startGoogleLogin(): string {
+  return getGoogleAuthUrl();
+}
+
+function createAccessTokenForUser(user: User): string {
+  return signAccessToken({
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  });
+}
+
+export async function loginWithGoogle(code: string): Promise<{ accessToken: string }> {
+  const googleProfile = await getGoogleUserFromAuthCode(code);
+
+  let user = await findUserByGoogleId(googleProfile.googleId);
+  if (!user) {
+    user = await findUserByEmail(googleProfile.email);
+
+    if (user) {
+      // link this google account to existing email user
+      user = await linkGoogleIdToUser(user.id, googleProfile.googleId);
+    } else {
+      // first time login - create the user in postgresDB
+      user = await createGoogleUser(googleProfile.email, googleProfile.googleId);
+    }
+  }
+
+  const accessToken = createAccessTokenForUser(user);
 
   return { accessToken };
 }
